@@ -1,20 +1,16 @@
-import { getRequestListener } from "@hono/node-server";
-import dns from "dns";
+import { handle } from "hono/vercel";
 import app from "../src/app";
 import { connectDB } from "../src/config/database";
 
-// Set DNS servers to Google's to resolve SRV records if default DNS fails
-try {
-  dns.setServers(["8.8.8.8", "8.8.4.4"]);
-} catch (err) {
-  // Ignore if not allowed in child process or environment
-}
+export const config = {
+  runtime: "nodejs",
+};
 
-// Global DB Connection for Serverless
+// Global DB Connection (Best practice for Serverless cold starts)
 connectDB()
-  .then(() => console.log("✅ DB Connection Initiated from Entry Point"))
+  .then(() => console.log("✅ DB Connection Initiated from API Entry Point"))
   .catch((err) =>
-    console.error("❌ DB Connection Failed at Entry Point:", err),
+    console.error("❌ DB Connection Failed at API Entry Point:", err),
   );
 
-export default getRequestListener(app.fetch);
+export default handle(app);
