@@ -9,6 +9,18 @@ import api from "./routes";
 
 const app = new Hono();
 
+app.use(
+  "*",
+  cors({
+    origin: (origin) => origin || "*",
+    credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Branch-Id"],
+    exposeHeaders: ["Set-Cookie"],
+    maxAge: 86400, // 24 hours
+  }),
+);
+
 // Global Middlewares
 app.use("*", logger());
 // Connect to DB lazily
@@ -29,18 +41,6 @@ app.use("*", prettyJSON());
 
 app.get("/", (c) =>
   c.json({ message: "Backend is running!", timestamp: new Date() }),
-);
-
-app.use(
-  "*",
-  cors({
-    origin: (origin) => origin,
-    credentials: true,
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    exposeHeaders: ["Set-Cookie"],
-    maxAge: 86400, // 24 hours
-  }),
 );
 
 // Ensure DB is connected before processing any request
