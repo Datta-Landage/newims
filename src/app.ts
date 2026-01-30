@@ -34,18 +34,7 @@ app.get("/", (c) =>
 app.use(
   "*",
   cors({
-    origin: (origin) => {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "https://hipalz-ims.vercel.app",
-        // https://hipalz-ims.vercel.app,
-        //https://hipalz-ims.vercel.app/login
-        //https://hipalz-ims-backend.vercel.app
-        process.env.FRONTEND_URL,
-      ].filter(Boolean);
-
-      return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
-    },
+    origin: (origin) => origin,
     credentials: true,
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization", "X-Branch-Id"],

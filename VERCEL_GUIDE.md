@@ -1,59 +1,57 @@
-# Vercel Deployment Guide for IMS Backend
+# 🚀 How to Deploy on Vercel (Hono "Native" Setup)
 
-This guide ensures your Hono/Node.js backend is correctly configured for Vercel Serverless Functions.
+Since we switched to the standard Hono setup (using `api/[...route].ts`), deployment is very simple. Vercel automatically detects the API as a Serverless Function.
 
-## 1. Project Configuration Checklist
+## 1. Push Code to GitHub
+Ensure your latest code (with `api/[...route].ts`) is pushed to your GitHub repository.
 
-Ensure your files are set up as follows (we have already done this):
+## 2. Import Project in Vercel
+1.  Go to your **[Vercel Dashboard](https://vercel.com/dashboard)**.
+2.  Click **"Add New..."** -> **"Project"**.
+3.  **Import** your `newims` repository.
 
-*   **`vercel.json`**:
-    ```json
-    {
-      "version": 2,
-      "outputDirectory": "dist",
-      "buildCommand": "npm run build",
-      "rewrites": [
-        { "source": "/(.*)", "destination": "/api/index.ts" }
-      ]
-    }
-    ```
+## 3. Configure Project Settings
 
-## 2. Vercel Dashboard Settings
+In the "Configure Project" screen, set the following:
 
-Go to your Project Settings on Vercel and ensure these match exactly:
-
-| Setting | Value | Override? |
+| Setting | Value | Notes |
 | :--- | :--- | :--- |
-| **Framework Preset** | `Other` | - |
-| **Build Command** | `npm run build` | ✅ Yes |
-| **Output Directory** | `dist` | ✅ Yes |
-| **Install Command** | `npm install` | ✅ Yes |
+| **Framework Preset** | **Hono** | If not available, select **Other**. |
+| **Root Directory** | `./` | Default (leave empty). |
+| **Build Command** | `npm run build` | Optional, but good for error checking. |
+| **Output Directory** | `dist` | Default. |
+| **Install Command** | `npm install` | Default. |
 
-> **Note**: If you still get 404s, double check that you are accessing the correct routes (see below).
+> **Note:** Because we are using `api/[...route].ts`, Vercel automatically handles the routing!
 
-## 3. Environment Variables
+## 4. Environment Variables (Critical!) 🔑
 
-You **MUST** add these variables in Vercel under **Settings > Environment Variables**:
+Expand the **"Environment Variables"** section and add the following keys from your `.env` file:
 
-*   `MONGODB_URI`: Your full MongoDB connection string.
-*   `JWT_SECRET`: Secret key for tokens.
-*   `JWT_REFRESH_SECRET`: Secret key for refresh tokens.
-*   `FRONTEND_URL`: `https://hipalz-ims.vercel.app` (or your frontend domain).
+*   `MONGODB_URI`: `mongodb+srv://...` (Your Request Connection String)
+    *   *Make sure your MongoDB Atlas "Network Access" allows `0.0.0.0/0` (Anywhere).*
+*   `JWT_SECRET`: `your_secret_key`
+*   `JWT_REFRESH_SECRET`: `your_refresh_secret`
+*   `FRONTEND_URL`: `https://your-frontend.vercel.app` (or `*` for testing)
 
-**Important**: If `MONGODB_URI` is missing or invalid (e.g., waiting for IP allowlist), the app might crash or time out, resulting in "routes not loading".
+## 5. Click "Deploy" 🚀
 
-## 4. Troubleshooting "Routes Not Loading"
+Vercel will build your project. Once done, you will get a URL like `https://newims.vercel.app`.
 
-If you see a 404 or 500 error:
+## 6. Verify Deployment
 
-1.  **Check Function Logs**:
-    *   Go to **Deployments** > Select the latest deployment > **Functions** tab.
-    *   Select `api/index.ts`.
-    *   Look for the logs we added: `✅ MongoDB Connected Successfully` or `❌ MongoDB Connection Error`.
+Since we are using the `/api` directory, your routes will be:
 
-2.  **Verify URLs**:
-    *   **Health Check**: `https://your-project.vercel.app/health`
-        *   If this returns 503, the DB is not connected.
-        *   If this returns 404, Vercel isn't routing correctly.
-    *   **API Routes**: `https://your-project.vercel.app/api/v1/users` (Note the `/api/v1` prefix).
-    *   **Root URL**: `https://your-project.vercel.app/` will return **404** because we have no route for `/`. **This is normal.**
+*   **API Root**: `https://newims.vercel.app/api`
+*   **Health Check**: `https://newims.vercel.app/api/health`
+    *   *Note: Using the Hono Vercel adapter, often the routes are mounted relative to the file path. Check `/api/health` first.*
+*   **Users**: `https://newims.vercel.app/api/v1/users`
+
+### Troubleshooting
+
+*   **404 Not Found**:
+    *   Remember, there is no "Homepage" (`/`).
+    *   Try accessing `/api/health`.
+*   **500 Server Error**:
+    *   Check **Functions** logs in Vercel Dashboard.
+    *   Usually means `MONGODB_URI` is missing or wrong.
