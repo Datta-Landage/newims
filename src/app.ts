@@ -9,17 +9,7 @@ import api from "./routes";
 
 const app = new Hono();
 
-app.use(
-  "*",
-  cors({
-    origin: (origin) => origin || "*",
-    credentials: true,
-    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization", "X-Branch-Id"],
-    exposeHeaders: ["Set-Cookie"],
-    maxAge: 86400, // 24 hours
-  }),
-);
+app.use("*", cors());
 
 // Global Middlewares
 app.use("*", logger());
