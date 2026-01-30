@@ -10,7 +10,16 @@ const app = new Hono();
 
 // Global Middlewares
 app.use("*", logger());
+app.use("*", async (c, next) => {
+  console.log(`[REQUEST] ${c.req.method} ${c.req.url}`);
+  await next();
+});
 app.use("*", prettyJSON());
+
+app.get("/", (c) =>
+  c.json({ message: "Backend is running!", timestamp: new Date() }),
+);
+
 app.use(
   "*",
   cors({
