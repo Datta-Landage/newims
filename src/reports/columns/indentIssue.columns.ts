@@ -1,0 +1,31 @@
+import { ExcelColumn } from '../excel/excel.service';
+
+export const indentIssueColumns: ExcelColumn[] = [
+    { header: "S.No", key: "sNo", type: "number" },
+    { header: "Location", key: "location", type: "string" },
+    { header: "WorkArea", key: "workArea", type: "string" },
+    { header: "Created By", key: "createdBy", type: "string" },
+    { header: "Indent ID", key: "displayId", type: "string" },
+    { header: "Based on Requested Date", key: "requiredDate", type: "date", options: { numFmt: 'dd/mm/yyyy' } },
+    { header: "Requested Time", key: "requestedTime", type: "string" },
+    { header: "Issued Date", key: "issueDate", type: "date", options: { numFmt: 'dd/mm/yyyy' } },
+    { header: "Issued Time", key: "issueTime", type: "string" },
+    { header: "Indent Date", key: "indentDate", type: "date", options: { numFmt: 'dd/mm/yyyy' } },
+    { header: "Category", key: "category", type: "string" },
+    { header: "Sub Category", key: "subCategory", type: "string" },
+    { header: "HSN/SAC", key: "hsnCode", type: "string" },
+    { header: "Item Code", key: "itemCode", type: "string" },
+    { header: "Item Name", key: "itemName", type: "string" },
+    { header: "Entry Type", key: "entryType", type: "string" },
+    { header: "Package Name", key: "pkgName", type: "string" },
+    { header: "Tax (%)", key: "taxRate", type: "number" },
+    { header: "Requested Qty", key: "requestedQty", type: "number" },
+    { header: "Issued Qty", key: "issuedQty", type: "number" },
+    { header: "Pending Qty", key: "pendingQty", type: "number" },
+    { header: "WAC(incl.tax,etc)", key: "wac", type: "number" },
+    { header: "Total(incl.tax,etc)", key: "total", type: "number" },
+    { header: "Indent Status", key: "status", type: "string" },
+    { header: "Indent Type", key: "indentType", type: "string" },
+    { header: "Item Remark", key: "itemRemark", type: "string" },
+    { header: "Indent Remark", key: "indentRemark", type: "string" }
+];
