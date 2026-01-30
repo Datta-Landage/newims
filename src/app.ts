@@ -15,7 +15,7 @@ app.use(
     origin: (origin) => origin || "*",
     credentials: true,
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization", "X-Branch-Id"],
+    allowHeaders: ["Content-Type", "Authorization"],
     exposeHeaders: ["Set-Cookie"],
     maxAge: 86400,
   }),
