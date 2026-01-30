@@ -24,7 +24,7 @@ export const connectDB = async () => {
 
   try {
     cachedPromise = mongoose.connect(Config.MONGODB_URI, {
-      bufferCommands: false, // Disable Mongoose buffering to fail fast if not connected
+      bufferCommands: true, // Enable buffering so requests wait for connection
       serverSelectionTimeoutMS: 5000, // Fail after 5 seconds instead of 30s default
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
     });
@@ -33,8 +33,7 @@ export const connectDB = async () => {
     return cachedPromise;
   } catch (error) {
     console.error("❌ MongoDB Connection Error:", error);
-    // Do NOT process.exit(1) in serverless; let the request fail but keep the lambda alive if possible,
-    // or let the error bubble up so Vercel captures it in logs.
+    cachedPromise = null; // Reset promise so we can retry on next request
     throw error;
   }
 };

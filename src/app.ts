@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import mongoose from "mongoose";
+import { connectDB } from "./config/database";
 import { Role } from "./models";
 import api from "./routes";
 
@@ -10,6 +11,16 @@ const app = new Hono();
 
 // Global Middlewares
 app.use("*", logger());
+// Connect to DB lazily
+app.use("*", async (c, next) => {
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error("Lazy DB Connection Failed:", err);
+  }
+  await next();
+});
+
 app.use("*", async (c, next) => {
   console.log(`[REQUEST] ${c.req.method} ${c.req.url}`);
   await next();
