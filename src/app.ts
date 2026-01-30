@@ -2,7 +2,8 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
-// import checkRoutes from './routes/check.routes'; // Does not exist? Removed.
+import mongoose from "mongoose";
+import { Role } from "./models";
 import api from "./routes";
 
 const app = new Hono();
@@ -43,6 +44,44 @@ app.use(
 
 app.route("/api/v1", api);
 
-app.get("/health", (c) => c.json({ status: "ok", uptime: process.uptime() }));
+app.get("/health", async (c) => {
+  let dbStatus = "unknown";
+  let dbCheck = "pending";
+  let isHealthy = false;
+
+  try {
+    const state = mongoose.connection.readyState;
+    const states = [
+      "disconnected",
+      "connected",
+      "connecting",
+      "disconnecting",
+      "uninitialized",
+    ];
+    dbStatus = states[state] || "unknown";
+
+    if (state === 1) {
+      // Perform a lightweight query to verify read access
+      await Role.findOne().select("_id").lean();
+      dbCheck = "success";
+      isHealthy = true;
+    } else {
+      dbCheck = "failed: not connected";
+    }
+  } catch (error: any) {
+    dbCheck = `failed: ${error.message}`;
+    console.error("Health Check DB Error:", error);
+  }
+
+  const payload = {
+    status: isHealthy ? "ok" : "error",
+    uptime: process.uptime(),
+    dbState: dbStatus,
+    dbCheck: dbCheck,
+    timestamp: new Date().toISOString(),
+  };
+
+  return c.json(payload, isHealthy ? 200 : 503);
+});
 
 export default app;
