@@ -1,10 +1,9 @@
-import dns from 'dns';
-import { Hono } from 'hono';
-import { handle } from 'hono/vercel';
-import { serve } from '@hono/node-server';
-import app from './app';
-import { Config } from './config';
-import { connectDB } from './config/database';
+import { serve } from "@hono/node-server";
+import { Hono } from "hono";
+import { handle } from "hono/vercel";
+import app from "./app";
+import { Config } from "./config";
+import { connectDB } from "./config/database";
 
 // DNS cache settings (Optional: Keep if necessary for your environment)
 // try {
@@ -14,7 +13,12 @@ import { connectDB } from './config/database';
 // }
 
 // Global DB Connection (Best practice for Serverless cold starts)
-connectDB();
+// Global DB Connection (Best practice for Serverless cold starts)
+connectDB()
+  .then(() => console.log("✅ DB Connection Initiated from Source Entry Point"))
+  .catch((err) =>
+    console.error("❌ DB Connection Failed at Source Entry Point:", err),
+  );
 
 if (!(app instanceof Hono)) {
   throw new Error("Application must be an instance of Hono");
@@ -27,7 +31,7 @@ export default handle(app);
 const port = Number(Config.PORT) || 3000;
 
 // @ts-ignore
-if (typeof Bun !== 'undefined') {
+if (typeof Bun !== "undefined") {
   console.log(`🚀 Bun Server running on port ${port}`);
   // @ts-ignore
   Bun.serve({
@@ -42,4 +46,3 @@ if (typeof Bun !== 'undefined') {
     port: port,
   });
 }
-

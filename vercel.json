@@ -2,12 +2,7 @@
   "version": 2,
   "buildCommand": "tsc",
   "devCommand": "tsx watch --env-file=.env src/index.ts",
-  "functions": {
-    "api/index.ts": {
-      "memory": 1024,
-      "maxDuration": 50
-    }
-  },
+
   "rewrites": [
     {
       "source": "/(.*)",
